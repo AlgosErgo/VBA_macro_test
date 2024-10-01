@@ -1,0 +1,69 @@
+Function GetCurrentWorkbookPath() As String
+    ' 現在のワークブックのパスを取得します
+    Dim wbPath As String
+    wbPath = ThisWorkbook.Path
+    
+    ' パスが空でない場合は返す
+    If wbPath <> "" Then
+        GetCurrentWorkbookPath = wbPath
+    Else
+        GetCurrentWorkbookPath = "ファイルは保存されていません"
+    End If
+End Function
+
+Function GetFilePathAndName(targetWorkbook As Workbook, _
+                             withSheetName As String, _
+                             range_Path As String, _
+                             range_Name As String)
+    ' 現在のワークブックのパスを指定のセルに入力
+    Dim filePath As String
+    Dim fileName As String ' ファイル名は空の文字列として初期化
+    
+    filePath = GetCurrentWorkbookPath()
+    
+    ' 現在のワークブックのパスを指定のセルに入力
+    targetWorkbook.Worksheets(withSheetName).Range(range_Path).Value = filePath
+    targetWorkbook.Worksheets(withSheetName).Range(range_Name).Value = fileName
+End Function
+
+Function SaveFileAsName(targetWorkbook As Workbook, _
+                        withSheetName As String, _
+                        range_Path As String, _
+                        range_Name As String)
+    ' 指定されたセルのパスと名前を使ってファイルを保存
+    Dim fullPath As String
+    
+    ' 保存先ファイルパスとファイル名を連結
+    fullPath = targetWorkbook.Sheets(withSheetName).Range(range_Path).Value & "\" & _
+               targetWorkbook.Sheets(withSheetName).Range(range_Name).Value
+    
+    ' 指定したパスにファイルを保存
+    targetWorkbook.SaveCopyAs fullPath
+End Function
+
+Private Sub Workbook_Open()
+    ' ワークブックが開かれたときにC4に現在のパスを入力
+    Dim withSheetName As String
+    withSheetName = "Sheet1" ' シート名を指定
+
+    ThisWorkbook.Worksheets(withSheetName).Range("C4").Value = GetCurrentWorkbookPath()
+End Sub
+
+Sub Button2()
+    ' ファイルを保存するための処理を実行
+    Dim targetWorkbook As Workbook
+    Dim withSheetName As String
+    Dim range_Path As String
+    Dim range_Name As String
+    
+    Set targetWorkbook = ThisWorkbook
+    withSheetName = "Sheet1"
+    range_Path = "C4"
+    range_Name = "C8"
+    
+    ' ファイルパスとファイル名を取得
+    Call GetFilePathAndName(targetWorkbook, withSheetName, range_Path, range_Name)
+    
+    ' ファイルを指定のパスに保存
+    Call SaveFileAsName(targetWorkbook, withSheetName, range_Path, range_Name)
+End Sub
