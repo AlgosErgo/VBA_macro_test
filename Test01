@@ -1,0 +1,56 @@
+Function GetCurrentWorkbookPath() As String
+    ' 現在のワークブックのパスを取得
+    Dim wbPath As String
+    wbPath = ThisWorkbook.Path
+    
+    ' パスが空でない場合は返す
+    If wbPath <> "" Then
+        GetCurrentWorkbookPath = wbPath
+    Else
+        GetCurrentWorkbookPath = "ファイルは保存されていません"
+    End If
+End Function
+
+Function GetFilePathAndName(toWorkbook As Workbook, withSheetName As String, fileType As String, fileExt As String, range_Path As String, range_Name As String)
+    Dim filePath As String      ' ファイルの保存先
+    Dim fileName As String      ' ファイル名を設定（ここでは空の文字列）
+    
+    ' 現在のワークブックのパスを取得
+    filePath = GetCurrentWorkbookPath()
+    
+    ' 現在のワークブックのパスを指定のセルに入力
+    toWorkbook.Worksheets(withSheetName).Range(range_Path).Value = filePath
+    toWorkbook.Worksheets(withSheetName).Range(range_Name).Value = fileName ' 必要に応じてファイル名を設定
+End Function
+
+
+
+Function SaveFileAsName(targetWorkbook As Workbook, withSheetName As String, range_Path As String, range_Name As String)
+'    Dim targetWorkbook As Workbook '保存したいブック
+'    Dim withSheetName As String 'range_Pathとrange_Nameのシート名
+'    Dim range_Path As String    '保存先ファイルパスの表示先セル
+'    Dim range_Name As String    '保存時につけたい名前（ファイル名）の表示先セル
+
+    Dim fullPath As String      '保存先ファイルパスとファイル名を連結したもの
+    fullPath = targetWorkbook.Sheets(withSheetName).Range(range_Path) & "\" & targetWorkbook.Sheets(withSheetName).Range(range_Name)
+    
+    Call targetWorkbook.SaveCopyAs(fullPath)
+ 
+End Function
+
+
+Sub Button2()
+    'ファイルを選択するとファイルパスとファイル名をセルに表示する処理を呼び出す
+    Dim targetWorkbook As Workbook '保存したいブック
+    Dim withSheetName As String 'range_Pathとrange_Nameのシート名
+    Dim range_Path As String    '保存先ファイルパスの表示先セル
+    Dim range_Name As String    '保存時につけたい名前（ファイル名）の表示先セル
+    
+    Set targetWorkbook = ThisWorkbook
+    withSheetName = "sheet1"
+    range_Path = "C4"
+    range_Name = "C8"
+    
+    Call SaveFileAsName(targetWorkbook, withSheetName, range_Path, range_Name)
+    
+End Sub
